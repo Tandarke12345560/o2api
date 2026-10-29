@@ -1,0 +1,45 @@
+{
+  "name": "opencode2api",
+  "version": "1.0.0",
+  "description": "Use OpenCode as an OpenAI-compatible API. One command, no dependencies.",
+  "type": "module",
+  "bin": {
+    "opencode2api": "./bin/opencode2api.mjs"
+  },
+  "files": [
+    "bin",
+    "server.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs",
+    "help": "node server.mjs --help"
+  },
+  "keywords": [
+    "opencode",
+    "openai",
+    "api",
+    "proxy",
+    "gateway",
+    "llm",
+    "coding-agent",
+    "openai-compatible",
+    "claude-code",
+    "codex"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourname/opencode2api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourname/opencode2api/issues"
+  },
+  "homepage": "https://github.com/yourname/opencode2api#readme",
+  "author": "",
+  "license": "MIT"
+}

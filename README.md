@@ -1,0 +1,417 @@
+<div align="center">
+
+<img src="assets/banner.svg" alt="opencode2api banner" width="100%" />
+
+<h1>opencode2api</h1>
+
+<p><strong>Use <a href="https://opencode.ai">OpenCode</a> as an OpenAI-compatible API.</strong><br/>
+One command. Zero dependencies. Your existing tools just work.</p>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-22D3EE.svg?style=for-the-badge)](LICENSE)
+[![Node](https://img.shields.io/badge/Node-%E2%89%A522-34D399.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Dependencies](https://img.shields.io/badge/dependencies-0-7C3AED.svg?style=for-the-badge)](package.json)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/yourname/opencode2api/pulls)
+[![OpenAI compatible](https://img.shields.io/badge/OpenAI-compatible-F59E0B.svg?style=for-the-badge)](https://platform.openai.com/docs/api-reference)
+
+<br/>
+
+<img src="assets/demo.gif" alt="opencode2api demo" width="760" />
+
+<br/>
+<br/>
+
+**`POST /v1/chat/completions`** · **`GET /v1/models`** · **`GET /health`**
+
+</div>
+
+---
+
+## ✨ What is this?
+
+`opencode2api` puts a clean, OpenAI-compatible HTTP API in front of a **real, running OpenCode
+server**. It does not impersonate anything: it uses OpenCode's own HTTP API (sessions, prompts,
+messages), so requests genuinely originate from the OpenCode client on your machine.
+
+```text
+ your app / SDK / agent
+          │  POST /v1/chat/completions
+          ▼
+   ┌─────────────────┐
+   │  opencode2api   │  ← this project (single file, no deps)
+   └────────┬────────┘
+            │  OpenCode HTTP API (Basic auth)
+            ▼
+   ┌─────────────────┐
+   │  OpenCode       │  sessions · prompts · tools · models
+   └────────┬────────┘
+            ▼
+     any provider: free · Go · BYOK · local
+```
+
+**Why?** Because everything speaks OpenAI now — SDKs, agents, IDE plugins, automation tools,
+n8n, LangChain, Continue, Cursor, Claude Code. This lets your OpenCode setup join that ecosystem
+without writing glue code.
+
+> [!NOTE]
+> This is a **bridge**, not a bypass. It uses the official OpenCode API and respects your
+> OpenCode configuration, permissions, and provider limits.
+
+---
+
+## 🚀 Features
+
+| | Feature | Detail |
+|---|---|---|
+| ⚡ | **One command** | `npx opencode2api` — no build, no install, no config file |
+| 🪶 | **Zero dependencies** | Only Node built-ins (`http`, `fs`, `path`) and global `fetch` |
+| 🔌 | **OpenAI-compatible** | Chat Completions, streaming SSE, `usage`, `finish_reason`, `[DONE]` |
+| 🧠 | **All your models** | Whatever OpenCode exposes — free, Go, BYOK, Ollama, vLLM |
+| 🔁 | **Multi-turn sessions** | Reuse an OpenCode session with `x-session-id` |
+| 🌊 | **Streaming** | Real deltas, not a single blob |
+| 🔐 | **Optional auth** | Bearer token for LAN / shared machines |
+| 🌍 | **LAN ready** | `--host 0.0.0.0` when you need it |
+| 🩺 | **Health check** | `/health` reports upstream version |
+| 🧩 | **Tiny surface** | One file, ~600 lines, easy to audit and fork |
+
+---
+
+## 📦 Quick start
+
+### 1. Requirements
+
+- **OpenCode v2** installed and running (`opencode --version`)
+- **Node.js ≥ 22**
+
+### 2. Run it
+
+```bash
+npx opencode2api
+```
+
+or from a clone:
+
+```bash
+git clone https://github.com/yourname/opencode2api.git
+cd opencode2api
+node server.mjs
+```
+
+You'll see:
+
+```text
+  opencode2api v1.0.0
+  OpenCode → OpenAI-compatible API
+
+  ➜ Local     http://127.0.0.1:8787/v1
+  ➜ Upstream  http://127.0.0.1:49374
+  ➜ Workdir   /home/you
+  ➜ Auth      open (localhost only)
+```
+
+### 3. Ask something
+
+```bash
+curl -s http://127.0.0.1:8787/v1/chat/completions \
+  -H 'content-type: application/json' \
+  -d '{
+    "model": "flint-40b-free",
+    "messages": [{ "role": "user", "content": "Say hi in one word." }]
+  }'
+```
+
+```json
+{
+  "id": "chatcmpl_1793300022634",
+  "object": "chat.completion",
+  "model": "flint-40b-free",
+  "choices": [
+    { "index": 0, "message": { "role": "assistant", "content": "Hi" }, "finish_reason": "stop" }
+  ],
+  "usage": { "prompt_tokens": 5061, "completion_tokens": 42, "total_tokens": 5103 },
+  "opencode": { "session_id": "ses_...", "reused": false }
+}
+```
+
+---
+
+## 🧞 One-command alias
+
+Install once, then it's just `opencode2api` everywhere:
+
+```bash
+./install.sh          # symlinks /usr/local/bin/opencode2api
+# or
+npm i -g .            # global npm bin
+# or, no install at all:
+echo "alias opencode2api='node $PWD/server.mjs'" >> ~/.zshrc && source ~/.zshrc
+```
+
+Then:
+
+```bash
+opencode2api --port 8080 --key sk-local
+```
+
+---
+
+## 🎛 Usage
+
+### Streaming
+
+```bash
+curl -N http://127.0.0.1:8787/v1/chat/completions \
+  -H 'content-type: application/json' \
+  -d '{"model":"flint-40b-free","stream":true,"messages":[{"role":"user","content":"Count 1 to 5"}]}'
+```
+
+```text
+data: {"choices":[{"delta":{"role":"assistant","content":""},"finish_reason":null}]}
+data: {"choices":[{"delta":{"content":"1\n2\n3\n4\n5"},"finish_reason":null}]}
+data: {"choices":[{"delta":{},"finish_reason":"stop"}]}
+data: {"choices":[],"usage":{"prompt_tokens":5059,"completion_tokens":686,"total_tokens":5745}}
+data: [DONE]
+```
+
+### Python (OpenAI SDK)
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8787/v1", api_key="not-needed")
+
+stream = client.chat.completions.create(
+    model="flint-40b-free",
+    messages=[{"role": "user", "content": "Explain this repo"}],
+    stream=True,
+)
+for chunk in stream:
+    print(chunk.choices[0].delta.content or "", end="", flush=True)
+```
+
+### Node / TypeScript
+
+```ts
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "http://127.0.0.1:8787/v1",
+  apiKey: process.env.BRIDGE_API_KEY ?? "not-needed",
+});
+
+const res = await client.chat.completions.create({
+  model: "flint-40b-free",
+  messages: [{ role: "user", content: "Write a haiku about proxies." }],
+});
+console.log(res.choices[0].message.content);
+```
+
+### Claude Code
+
+Claude Code speaks the Anthropic API. Point it at the bridge's OpenAI endpoint through a
+compatible gateway — or use OpenCode directly with `/connect`. See [`examples/`](examples/).
+
+### Multi-turn conversations
+
+Stateless by default (each request = fresh session, full history flattened into one prompt).
+Give a key to keep the session alive:
+
+```bash
+curl -s http://127.0.0.1:8787/v1/chat/completions \
+  -H 'content-type: application/json' \
+  -H 'x-session-id: chat-42' \
+  -d '{"model":"flint-40b-free","messages":[{"role":"user","content":"My name is Kerem."}]}'
+```
+
+Next call with the same `x-session-id` sends only the newest message; OpenCode keeps the history.
+
+### List models
+
+```bash
+curl -s http://127.0.0.1:8787/v1/models | jq -r '.data[].id'
+```
+
+---
+
+## 🔌 Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/v1/chat/completions` | OpenAI Chat Completions (stream + non-stream) |
+| `GET` | `/v1/models` | Models available in your OpenCode |
+| `GET` | `/health` | Upstream status + OpenCode version |
+
+---
+
+## ⚙️ Configuration
+
+Flags win over environment variables. Every setting has both.
+
+| Flag | Env | Default | Description |
+|---|---|---|---|
+| `-p, --port` | `PORT` | `8787` | Listen port |
+| `-H, --host` | `HOST` | `127.0.0.1` | Bind address (`0.0.0.0` for LAN) |
+| `-k, --key` | `BRIDGE_API_KEY` | — | Require `Authorization: Bearer …` |
+| `-m, --model` | `DEFAULT_MODEL` | first available | Default model id |
+| `-a, --agent` | `DEFAULT_AGENT` | `build` | `build` or `plan` |
+| `-d, --workdir` | `WORKDIR` | `cwd` | Directory the agent operates in |
+| `-u, --url` | `OPENCODE_URL` | `http://127.0.0.1:49374` | OpenCode server URL |
+| `--password` | `OPENCODE_PASSWORD` | `service.json` | OpenCode service password |
+
+```bash
+opencode2api --help
+```
+
+---
+
+## 🏗 Architecture
+
+```mermaid
+sequenceDiagram
+    participant C as Client (SDK/curl)
+    participant B as opencode2api
+    participant O as OpenCode server
+    participant M as Model provider
+
+    C->>B: POST /v1/chat/completions
+    B->>O: POST /api/session
+    O-->>B: session id
+    B->>O: POST /api/session/:id/prompt
+    loop poll every 300ms
+        B->>O: GET /api/session/:id/message
+        O-->>B: assistant text (growing)
+        B-->>C: SSE delta
+    end
+    B->>O: POST /api/experimental/session/:id/wait
+    O-->>B: idle
+    B-->>C: [DONE] + usage
+```
+
+<details>
+<summary><strong>Request lifecycle (non-stream)</strong></summary>
+
+1. Parse OpenAI body → resolve `model` via `/api/model`.
+2. Create (or reuse) an OpenCode session.
+3. Flatten `messages[]` into a single prompt (`System: … / User: … / Assistant: …`).
+4. `POST /prompt`, then `POST /wait` until the agent loop is idle.
+5. Read messages, keep only `type: "text"` parts of the last assistant message.
+6. Map tokens → `usage`, return `chat.completion`.
+7. Delete the session if it was stateless.
+
+</details>
+
+---
+
+## 🔐 Security
+
+- **Localhost by default.** Nothing is exposed until you pass `--host 0.0.0.0`.
+- **Always set `--key` when binding beyond localhost.** Anyone on the network can otherwise drive
+  your agent — including file and shell tools, depending on your permissions.
+- **Never expose it to the public internet** without a reverse proxy, TLS, and rate limiting.
+- The bridge reads `~/.config/opencode/service.json`; the password never leaves your machine
+  except to your own OpenCode server.
+
+---
+
+## ⚠️ Limits & caveats
+
+- **Agent API, not pure chat.** OpenCode can run tools; the bridge returns only the final text.
+  Tool calls are not forwarded to the client as structured calls.
+- **~5k token floor.** Every request carries OpenCode's system prompt. For cheap classification
+  or short chats, a direct model API is faster and cheaper.
+- **Streaming granularity is 300 ms** (message polling), not token-level.
+- **Permissions** follow your OpenCode config. For unattended use, define `permissions`
+  explicitly — an `ask` rule will block a request until answered.
+- **Provider limits still apply.** Free tiers, Go limits, and rate limits are unchanged.
+
+---
+
+## ❓ FAQ
+
+<details>
+<summary><strong>Does this bypass billing or limits?</strong></summary>
+
+No. It runs your existing OpenCode instance and its configured providers. Quotas, limits, and
+terms are exactly the same as using OpenCode normally.
+
+</details>
+
+<details>
+<summary><strong>Do I need an OpenAI API key?</strong></summary>
+
+No. The `api_key` in your SDK can be any string, unless you set `--key` on the bridge — then use
+that value.
+
+</details>
+
+<details>
+<summary><strong>Which models can I use?</strong></summary>
+
+Anything visible in `GET /v1/models` — whatever your OpenCode has connected (free models, Go,
+BYOK, Ollama, vLLM, OpenRouter, …).
+
+</details>
+
+<details>
+<summary><strong>Can I run it in Docker?</strong></summary>
+
+Yes — see [`Dockerfile`](Dockerfile). On Linux use `--network host` so the container can reach
+the OpenCode server on `127.0.0.1`.
+
+</details>
+
+<details>
+<summary><strong>Why does the first token take a while?</strong></summary>
+
+OpenCode boots a session, loads context, and may consult tools before answering. Warm sessions
+(`x-session-id`) are noticeably faster.
+
+</details>
+
+---
+
+## 🗺 Roadmap
+
+- [x] Chat Completions + streaming
+- [x] Model discovery
+- [x] Session reuse
+- [x] Bearer auth
+- [ ] `/v1/messages` (Anthropic-compatible) for Claude Code
+- [ ] `/v1/responses` (OpenAI Responses API)
+- [ ] Proper tool-call passthrough
+- [ ] Docker image + compose example
+- [ ] systemd unit + launchd plist
+
+PRs welcome — keep the dependency count at zero. 🧡
+
+---
+
+## 🤝 Contributing
+
+```bash
+git clone https://github.com/yourname/opencode2api.git
+cd opencode2api
+node --check server.mjs   # syntax
+node server.mjs --help    # smoke
+```
+
+Small, focused PRs. One feature per PR. No new dependencies without a very good reason.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) © contributors
+
+OpenCode itself is a separate project with its own license and terms of service.
+
+---
+
+<div align="center">
+
+**If this saved you an afternoon, a ⭐ helps other people find it.**
+
+<a href="https://github.com/yourname/opencode2api/stargazers">⭐ Star</a> ·
+<a href="https://github.com/yourname/opencode2api/issues">🐛 Issues</a> ·
+<a href="https://github.com/yourname/opencode2api/discussions">💬 Discussions</a>
+
+</div>
