@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 o2api contributors
 /**
  * o2api — OpenAI-compatible API in front of a real OpenCode server.
  *
@@ -49,7 +51,7 @@ const HELP = `
       -d '{"model":"<model>","messages":[{"role":"user","content":"hi"}]}'
 
   Not affiliated with OpenCode or any model provider.
-  Provided "as is" (MIT). You are responsible for complying with their terms.
+  Provided "as is" (Apache-2.0). You are responsible for complying with their terms.
   Full disclaimer: DISCLAIMER.md
 `;
 

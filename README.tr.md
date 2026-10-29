@@ -162,7 +162,7 @@ Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş Op
   yürürlükteki mevzuat (KVKK/GDPR) — modele veri gönderirken bunlara uymak senin sorumluluğunda.
 - **Kurulumu güvene al.** Varsayılan localhost; ağa açmadan önce `--key` kullan; internete TLS,
   kimlik doğrulama ve hız limiti olmadan açma.
-- **Garanti yok.** [MIT Lisansı](LICENSE) kapsamında "olduğu gibi" sunulur. Yazarlar; hesap kapanması,
+- **Garanti yok.** [Apache 2.0 Lisansı](LICENSE) kapsamında "olduğu gibi" sunulur. Yazarlar; hesap kapanması,
   kota tükenmesi, model çıktısı, veri kaybı veya yanlış yapılandırmadan doğan güvenlik olaylarından
   sorumlu değildir.
 
@@ -170,4 +170,9 @@ Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş Op
 
 ## 📄 Lisans
 
-[MIT](LICENSE). OpenCode ayrı bir projedir; kendi lisansı ve kullanım şartları geçerlidir.
+[Apache License 2.0](LICENSE) © katkıda bulunanlar — ayrıca [NOTICE](NOTICE).
+
+MIT yerine bilinçli olarak Apache 2.0 seçildi: **açık patent lisansı** ve **patent misilleme maddesi**
+içerir. Şirketlerin projeyi içeride kullanabilmesi için genelde aradığı koruma budur.
+
+OpenCode ayrı bir projedir; kendi lisansı ve kullanım şartları geçerlidir.

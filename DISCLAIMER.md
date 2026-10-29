@@ -43,7 +43,7 @@ You are solely responsible for:
 
 The software is provided **"as is"**, without warranty of any kind, express or implied, including
 but not limited to the warranties of merchantability, fitness for a particular purpose, and
-non-infringement. See the [MIT License](LICENSE).
+non-infringement. See the [Apache License 2.0](LICENSE).
 
 ### 5. Limitation of liability
 
@@ -101,7 +101,7 @@ Aşağıdakilerden tek başına sen sorumlusun:
 ### 4. Garanti yok
 
 Yazılım **"olduğu gibi"** sunulur; satılabilirlik, belirli bir amaca uygunluk ve ihlal etmeme
-dahil olmak üzere açık veya zımni hiçbir garanti verilmez. Bkz. [MIT Lisansı](LICENSE).
+dahil olmak üzere açık veya zımni hiçbir garanti verilmez. Bkz. [Apache 2.0 Lisansı](LICENSE).
 
 ### 5. Sorumluluğun sınırlandırılması
 

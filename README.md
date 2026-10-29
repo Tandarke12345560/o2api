@@ -7,7 +7,7 @@
 <p><strong>Use <a href="https://opencode.ai">OpenCode</a> as an OpenAI-compatible API.</strong><br/>
 One command. Zero dependencies. Your existing tools just work.</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-22D3EE.svg?style=for-the-badge)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2_0-22D3EE.svg?style=for-the-badge)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-%E2%89%A522-34D399.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-7C3AED.svg?style=for-the-badge)](package.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/yourname/o2api/pulls)
@@ -411,7 +411,7 @@ Small, focused PRs. One feature per PR. No new dependencies without a very good 
   terms, and applicable law (GDPR, KVKK, …) when sending data through a model.
 - **Secure your install.** Localhost by default; use `--key` before binding to a network; never
   expose it to the public internet without TLS, auth, and rate limiting.
-- **No warranty.** Provided "as is" under the [MIT License](LICENSE). The authors are not liable
+- **No warranty.** Provided "as is" under the [Apache License 2.0](LICENSE). The authors are not liable
   for account suspension, quota exhaustion, model output, data loss, or security incidents
   resulting from use or misconfiguration.
 
@@ -419,7 +419,11 @@ Small, focused PRs. One feature per PR. No new dependencies without a very good 
 
 ## 📄 License
 
-[MIT](LICENSE) © contributors
+[Apache License 2.0](LICENSE) © contributors — see also [NOTICE](NOTICE).
+
+Apache 2.0 is used deliberately instead of MIT: it includes an **express patent grant** and a
+**patent retaliation clause**, which is what most companies need before adopting a project
+internally.
 
 OpenCode itself is a separate project with its own license and terms of service.
 
