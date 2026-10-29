@@ -149,6 +149,25 @@ Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş Op
 
 ---
 
+## ⚖️ Sorumluluk reddi
+
+> **o2api'yi kullanmadan önce oku.** Tam metin: [DISCLAIMER.md](DISCLAIMER.md)
+
+- OpenCode, Anomaly, Alibaba, Qwen, OpenAI, Anthropic, Google veya herhangi bir model sağlayıcısıyla
+  **bağlantılı değildir**. Tüm markalar sahiplerine aittir.
+- **Köprü, kaçış yolu değil.** o2api, **senin** çalıştırdığın OpenCode sunucusunun resmî HTTP API'sini
+  çağırır. Faturalandırmayı, kotayı, hız limitini veya erişim kontrolünü **atlatmaz**; istemci taklidi
+  yapmaz, hesap paylaşmaz.
+- **Uyum sorumluluğu sende:** OpenCode kullanım şartları, bağladığın sağlayıcıların şartları ve
+  yürürlükteki mevzuat (KVKK/GDPR) — modele veri gönderirken bunlara uymak senin sorumluluğunda.
+- **Kurulumu güvene al.** Varsayılan localhost; ağa açmadan önce `--key` kullan; internete TLS,
+  kimlik doğrulama ve hız limiti olmadan açma.
+- **Garanti yok.** [MIT Lisansı](LICENSE) kapsamında "olduğu gibi" sunulur. Yazarlar; hesap kapanması,
+  kota tükenmesi, model çıktısı, veri kaybı veya yanlış yapılandırmadan doğan güvenlik olaylarından
+  sorumlu değildir.
+
+---
+
 ## 📄 Lisans
 
 [MIT](LICENSE). OpenCode ayrı bir projedir; kendi lisansı ve kullanım şartları geçerlidir.

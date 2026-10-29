@@ -47,6 +47,10 @@ const HELP = `
     curl http://127.0.0.1:8787/v1/chat/completions \\
       -H 'content-type: application/json' \\
       -d '{"model":"<model>","messages":[{"role":"user","content":"hi"}]}'
+
+  Not affiliated with OpenCode or any model provider.
+  Provided "as is" (MIT). You are responsible for complying with their terms.
+  Full disclaimer: DISCLAIMER.md
 `;
 
 function parseArgs(argv) {

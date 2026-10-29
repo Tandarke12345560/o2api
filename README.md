@@ -398,6 +398,25 @@ Small, focused PRs. One feature per PR. No new dependencies without a very good 
 
 ---
 
+## ⚖️ Disclaimer
+
+> **Read this before using o2api.** Full text: [DISCLAIMER.md](DISCLAIMER.md)
+
+- **Not affiliated** with OpenCode, Anomaly, Alibaba, Qwen, OpenAI, Anthropic, Google, or any model
+  provider. All trademarks belong to their owners.
+- **A bridge, not a bypass.** o2api calls the official HTTP API of the OpenCode server *you* run.
+  It does **not** bypass billing, quotas, rate limits, or access controls, and it does not
+  impersonate clients or share accounts.
+- **You are responsible** for complying with the OpenCode terms of service, your model providers'
+  terms, and applicable law (GDPR, KVKK, …) when sending data through a model.
+- **Secure your install.** Localhost by default; use `--key` before binding to a network; never
+  expose it to the public internet without TLS, auth, and rate limiting.
+- **No warranty.** Provided "as is" under the [MIT License](LICENSE). The authors are not liable
+  for account suspension, quota exhaustion, model output, data loss, or security incidents
+  resulting from use or misconfiguration.
+
+---
+
 ## 📄 License
 
 [MIT](LICENSE) © contributors

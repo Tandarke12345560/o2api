@@ -11,6 +11,7 @@
     "bin",
     "server.mjs",
     "README.md",
+    "DISCLAIMER.md",
     "LICENSE"
   ],
   "engines": {
