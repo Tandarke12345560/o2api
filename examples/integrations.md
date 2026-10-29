@@ -40,7 +40,7 @@ new OpenAI({ baseURL: "http://127.0.0.1:8787/v1", apiKey: "not-needed" });
 If the tool runs in Docker or on another machine:
 
 ```bash
-opencode2api --host 0.0.0.0 --key "$(openssl rand -hex 24)"
+o2api --host 0.0.0.0 --key "$(openssl rand -hex 24)"
 ```
 
 Then use `http://<your-lan-ip>:8787/v1` and send the key as a bearer token.

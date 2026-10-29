@@ -1,19 +1,19 @@
-# /etc/systemd/system/opencode2api.service
+# /etc/systemd/system/o2api.service
 #
 # sudo systemctl daemon-reload
-# sudo systemctl enable --now opencode2api
-# journalctl -u opencode2api -f
+# sudo systemctl enable --now o2api
+# journalctl -u o2api -f
 
 [Unit]
-Description=opencode2api - OpenAI-compatible API for OpenCode
+Description=o2api - OpenAI-compatible API for OpenCode
 After=network.target
 
 [Service]
 Type=simple
 # Run as the same user that owns ~/.config/opencode/service.json
 User=%i
-WorkingDirectory=/opt/opencode2api
-ExecStart=/usr/bin/node /opt/opencode2api/server.mjs --port 8787 --host 127.0.0.1
+WorkingDirectory=/opt/o2api
+ExecStart=/usr/bin/node /opt/o2api/server.mjs --port 8787 --host 127.0.0.1
 Restart=on-failure
 RestartSec=3
 

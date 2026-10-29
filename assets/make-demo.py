@@ -28,7 +28,7 @@ def window(draw):
     for i, color in enumerate(["#FF5F57", "#FEBC2E", "#28C840"]):
         cx = 44 + i * 22
         draw.ellipse([cx - 6, 38, cx + 6, 50], fill=color)
-    draw.text((130, 34), "opencode2api — zsh", font=ft, fill=DIM)
+    draw.text((130, 34), "o2api — zsh", font=ft, fill=DIM)
 
 
 def line(draw, y, parts, x=40):
@@ -38,7 +38,7 @@ def line(draw, y, parts, x=40):
 
 
 LINES = [
-    [("$ ", fb, GREEN), ("opencode2api", fb, WHITE)],
+    [("$ ", fb, GREEN), ("o2api", fb, WHITE)],
     [("  ➜ ", f, GREEN), ("Local     ", f, GRAY), ("http://127.0.0.1:8787/v1", f, CYAN)],
     [("  ➜ ", f, GREEN), ("Upstream  ", f, GRAY), ("http://127.0.0.1:49374", f, CYAN)],
     [("  ➜ ", f, GREEN), ("Auth      ", f, GRAY), ("open (localhost only)", f, YELLOW)],
@@ -113,8 +113,8 @@ d.rounded_rectangle([80, 88, 210, 218], radius=30, fill="#111827", outline="#7C3
 mw = d.textlength("{ }", font=mark)
 d.text((145 - mw / 2, 118), "{ }", font=mark, fill=CYAN)
 
-d.text((246, 100), "opencode", font=big, fill=WHITE)
-d.text((246 + d.textlength("opencode", font=big), 100), "2api", font=big, fill=CYAN)
+d.text((246, 100), "o2", font=big, fill=WHITE)
+d.text((246 + d.textlength("o2", font=big) + 6, 100), "api", font=big, fill=CYAN)
 d.text((250, 196), "OpenCode  →  OpenAI-compatible API", font=sub, fill=GRAY)
 
 for i, (label, color) in enumerate([("zero deps", "#C4B5FD"), ("one command", "#A5F3FC"), ("OpenAI SDK", "#A7F3D0")]):
@@ -124,7 +124,7 @@ for i, (label, color) in enumerate([("zero deps", "#C4B5FD"), ("one command", "#
 
 d.text((250, 372), "curl http://127.0.0.1:8787/v1/chat/completions", font=sub, fill=CYAN)
 d.text((250, 414), '  -d \'{"model":"...","messages":[...]}\'', font=sub, fill=DIM)
-d.text((250, 482), "https://github.com/yourname/opencode2api", font=sub, fill=GRAY)
+d.text((250, 482), "https://github.com/yourname/o2api", font=sub, fill=GRAY)
 
 img.save("/root/opencode-bridge/assets/social.png", optimize=True)
 print("wrote assets/social.png")

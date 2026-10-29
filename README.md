@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="opencode2api banner" width="100%" />
+<img src="assets/banner.svg" alt="o2api banner" width="100%" />
 
-<h1>opencode2api</h1>
+<h1>o2api</h1>
 
 <p><strong>Use <a href="https://opencode.ai">OpenCode</a> as an OpenAI-compatible API.</strong><br/>
 One command. Zero dependencies. Your existing tools just work.</p>
@@ -10,12 +10,12 @@ One command. Zero dependencies. Your existing tools just work.</p>
 [![License: MIT](https://img.shields.io/badge/License-MIT-22D3EE.svg?style=for-the-badge)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-%E2%89%A522-34D399.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-7C3AED.svg?style=for-the-badge)](package.json)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/yourname/opencode2api/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/yourname/o2api/pulls)
 [![OpenAI compatible](https://img.shields.io/badge/OpenAI-compatible-F59E0B.svg?style=for-the-badge)](https://platform.openai.com/docs/api-reference)
 
 <br/>
 
-<img src="assets/demo.gif" alt="opencode2api demo" width="760" />
+<img src="assets/demo.gif" alt="o2api demo" width="760" />
 
 <br/>
 <br/>
@@ -28,7 +28,7 @@ One command. Zero dependencies. Your existing tools just work.</p>
 
 ## ✨ What is this?
 
-`opencode2api` puts a clean, OpenAI-compatible HTTP API in front of a **real, running OpenCode
+`o2api` puts a clean, OpenAI-compatible HTTP API in front of a **real, running OpenCode
 server**. It does not impersonate anything: it uses OpenCode's own HTTP API (sessions, prompts,
 messages), so requests genuinely originate from the OpenCode client on your machine.
 
@@ -37,7 +37,7 @@ messages), so requests genuinely originate from the OpenCode client on your mach
           │  POST /v1/chat/completions
           ▼
    ┌─────────────────┐
-   │  opencode2api   │  ← this project (single file, no deps)
+   │  o2api   │  ← this project (single file, no deps)
    └────────┬────────┘
             │  OpenCode HTTP API (Basic auth)
             ▼
@@ -62,7 +62,7 @@ without writing glue code.
 
 | | Feature | Detail |
 |---|---|---|
-| ⚡ | **One command** | `npx opencode2api` — no build, no install, no config file |
+| ⚡ | **One command** | `npx o2api` — no build, no install, no config file |
 | 🪶 | **Zero dependencies** | Only Node built-ins (`http`, `fs`, `path`) and global `fetch` |
 | 🔌 | **OpenAI-compatible** | Chat Completions, streaming SSE, `usage`, `finish_reason`, `[DONE]` |
 | 🧠 | **All your models** | Whatever OpenCode exposes — free, Go, BYOK, Ollama, vLLM |
@@ -85,21 +85,21 @@ without writing glue code.
 ### 2. Run it
 
 ```bash
-npx opencode2api
+npx o2api
 ```
 
 or from a clone:
 
 ```bash
-git clone https://github.com/yourname/opencode2api.git
-cd opencode2api
+git clone https://github.com/yourname/o2api.git
+cd o2api
 node server.mjs
 ```
 
 You'll see:
 
 ```text
-  opencode2api v1.0.0
+  o2api v1.0.0
   OpenCode → OpenAI-compatible API
 
   ➜ Local     http://127.0.0.1:8787/v1
@@ -136,20 +136,20 @@ curl -s http://127.0.0.1:8787/v1/chat/completions \
 
 ## 🧞 One-command alias
 
-Install once, then it's just `opencode2api` everywhere:
+Install once, then it's just `o2api` everywhere:
 
 ```bash
-./install.sh          # symlinks /usr/local/bin/opencode2api
+./install.sh          # symlinks /usr/local/bin/o2api
 # or
 npm i -g .            # global npm bin
 # or, no install at all:
-echo "alias opencode2api='node $PWD/server.mjs'" >> ~/.zshrc && source ~/.zshrc
+echo "alias o2api='node $PWD/server.mjs'" >> ~/.zshrc && source ~/.zshrc
 ```
 
 Then:
 
 ```bash
-opencode2api --port 8080 --key sk-local
+o2api --port 8080 --key sk-local
 ```
 
 ---
@@ -258,7 +258,7 @@ Flags win over environment variables. Every setting has both.
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | OpenCode service password |
 
 ```bash
-opencode2api --help
+o2api --help
 ```
 
 ---
@@ -268,7 +268,7 @@ opencode2api --help
 ```mermaid
 sequenceDiagram
     participant C as Client (SDK/curl)
-    participant B as opencode2api
+    participant B as o2api
     participant O as OpenCode server
     participant M as Model provider
 
@@ -388,8 +388,8 @@ PRs welcome — keep the dependency count at zero. 🧡
 ## 🤝 Contributing
 
 ```bash
-git clone https://github.com/yourname/opencode2api.git
-cd opencode2api
+git clone https://github.com/yourname/o2api.git
+cd o2api
 node --check server.mjs   # syntax
 node server.mjs --help    # smoke
 ```
@@ -410,8 +410,8 @@ OpenCode itself is a separate project with its own license and terms of service.
 
 **If this saved you an afternoon, a ⭐ helps other people find it.**
 
-<a href="https://github.com/yourname/opencode2api/stargazers">⭐ Star</a> ·
-<a href="https://github.com/yourname/opencode2api/issues">🐛 Issues</a> ·
-<a href="https://github.com/yourname/opencode2api/discussions">💬 Discussions</a>
+<a href="https://github.com/yourname/o2api/stargazers">⭐ Star</a> ·
+<a href="https://github.com/yourname/o2api/issues">🐛 Issues</a> ·
+<a href="https://github.com/yourname/o2api/discussions">💬 Discussions</a>
 
 </div>

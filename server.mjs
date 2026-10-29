@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * opencode2api — OpenAI-compatible API in front of a real OpenCode server.
+ * o2api — OpenAI-compatible API in front of a real OpenCode server.
  *
  * It does NOT impersonate OpenCode: it drives the actual OpenCode HTTP API
  * (sessions, prompts, messages), so every request genuinely originates from
@@ -18,13 +18,13 @@ import os from "node:os";
 import path from "node:path";
 
 const VERSION = "1.0.0";
-const PID_FILE = path.join(os.tmpdir(), "opencode2api.pid");
+const PID_FILE = path.join(os.tmpdir(), "o2api.pid");
 
 const HELP = `
-  opencode2api ${VERSION} — use OpenCode as an OpenAI-compatible API.
+  o2api ${VERSION} — use OpenCode as an OpenAI-compatible API.
 
   Usage:
-    opencode2api [options]
+    o2api [options]
 
   Options:
     -p, --port <n>         Port to listen on            (default: 8787)
@@ -39,9 +39,9 @@ const HELP = `
         --help             Print this help
 
   Examples:
-    opencode2api
-    opencode2api --port 8080 --key sk-local
-    opencode2api --host 0.0.0.0 --key sk-local --workdir ~/code/my-app
+    o2api
+    o2api --port 8080 --key sk-local
+    o2api --host 0.0.0.0 --key sk-local --workdir ~/code/my-app
 
   Then:
     curl http://127.0.0.1:8787/v1/chat/completions \\
@@ -545,7 +545,7 @@ function banner() {
   const shown = HOST === "0.0.0.0" ? "0.0.0.0 (all interfaces)" : HOST;
   const lines = [
     "",
-    `  ${c.magenta}${c.bold}opencode2api${c.reset} ${c.dim}v${VERSION}${c.reset}`,
+    `  ${c.magenta}${c.bold}o2api${c.reset} ${c.dim}v${VERSION}${c.reset}`,
     `  ${c.dim}OpenCode → OpenAI-compatible API${c.reset}`,
     "",
     `  ${c.green}➜${c.reset} Local     ${c.cyan}http://${HOST}:${PORT}/v1${c.reset}`,
@@ -575,7 +575,7 @@ server.listen(PORT, HOST, () => {
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(`\n  ${c.red}error:${c.reset} port ${PORT} is already in use.`);
-    console.error(`  ${c.dim}try: opencode2api --port ${PORT + 1}${c.reset}\n`);
+    console.error(`  ${c.dim}try: o2api --port ${PORT + 1}${c.reset}\n`);
     process.exit(1);
   }
   throw err;

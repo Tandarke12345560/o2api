@@ -1,4 +1,4 @@
-// opencode2api — Node example (native fetch, no dependencies)
+// o2api — Node example (native fetch, no dependencies)
 //   node examples/node.mjs
 
 const BASE = process.env.BASE_URL ?? "http://127.0.0.1:8787/v1";

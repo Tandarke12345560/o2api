@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="opencode2api" width="100%" />
+<img src="assets/banner.svg" alt="o2api" width="100%" />
 
-<h1>opencode2api</h1>
+<h1>o2api</h1>
 
 <p><strong>OpenCode'u OpenAI-uyumlu bir API'ye çevir.</strong><br/>
 Tek komut. Sıfır bağımlılık. Mevcut araçların olduğu gibi çalışır.</p>
@@ -23,7 +23,7 @@ Taklit yok: OpenCode'un kendi API'sini (session, prompt, message) kullanır.
           │  POST /v1/chat/completions
           ▼
    ┌─────────────────┐
-   │  opencode2api   │  ← tek dosya, bağımlılık yok
+   │  o2api   │  ← tek dosya, bağımlılık yok
    └────────┬────────┘
             │  OpenCode HTTP API (Basic auth)
             ▼
@@ -41,15 +41,15 @@ Taklit yok: OpenCode'un kendi API'sini (session, prompt, message) kullanır.
 **Gereksinim:** OpenCode v2 çalışıyor + Node.js ≥ 22
 
 ```bash
-npx opencode2api
+npx o2api
 # ➜ http://127.0.0.1:8787/v1
 ```
 
 veya:
 
 ```bash
-git clone https://github.com/yourname/opencode2api.git
-cd opencode2api && node server.mjs
+git clone https://github.com/yourname/o2api.git
+cd o2api && node server.mjs
 ```
 
 İlk istek:
@@ -76,15 +76,15 @@ print(client.chat.completions.create(
 ## 🧞 Tek komut (alias)
 
 ```bash
-./install.sh                                    # /usr/local/bin/opencode2api
+./install.sh                                    # /usr/local/bin/o2api
 npm i -g .                                      # global npm
-echo "alias opencode2api='node $PWD/server.mjs'" >> ~/.bashrc   # alias
+echo "alias o2api='node $PWD/server.mjs'" >> ~/.bashrc   # alias
 ```
 
 Sonrası:
 
 ```bash
-opencode2api --port 8080 --key sk-local
+o2api --port 8080 --key sk-local
 ```
 
 ---
@@ -113,7 +113,7 @@ opencode2api --port 8080 --key sk-local
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | Servis şifresi |
 
 ```bash
-opencode2api --help
+o2api --help
 ```
 
 ---

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# opencode2api — quick curl examples
+# o2api — quick curl examples
 set -euo pipefail
 
 BASE="${BASE:-http://127.0.0.1:8787}"

@@ -1,4 +1,4 @@
-"""opencode2api — Python (OpenAI SDK) example.
+"""o2api — Python (OpenAI SDK) example.
 
     pip install openai
     python examples/python.py

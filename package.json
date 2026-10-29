@@ -1,10 +1,11 @@
 {
-  "name": "opencode2api",
+  "name": "o2api",
   "version": "1.0.0",
   "description": "Use OpenCode as an OpenAI-compatible API. One command, no dependencies.",
   "type": "module",
   "bin": {
-    "opencode2api": "./bin/opencode2api.mjs"
+    "o2api": "./bin/o2api.mjs",
+    "opencode2api": "./bin/o2api.mjs"
   },
   "files": [
     "bin",
@@ -34,12 +35,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourname/opencode2api.git"
+    "url": "git+https://github.com/yourname/o2api.git"
   },
   "bugs": {
-    "url": "https://github.com/yourname/opencode2api/issues"
+    "url": "https://github.com/yourname/o2api/issues"
   },
-  "homepage": "https://github.com/yourname/opencode2api#readme",
+  "homepage": "https://github.com/yourname/o2api#readme",
   "author": "",
   "license": "MIT"
 }

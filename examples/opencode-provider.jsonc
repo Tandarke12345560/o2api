@@ -1,11 +1,11 @@
 {
-  // Use opencode2api as a provider inside another OpenCode instance.
+  // Use o2api as a provider inside another OpenCode instance.
   // Copy into ~/.config/opencode/opencode.jsonc and restart that instance.
   "$schema": "https://opencode.ai/config.json",
 
   "providers": {
     "bridge": {
-      "name": "opencode2api",
+      "name": "o2api",
       "package": "@opencode/ai/providers/openai-compatible",
       "env": ["BRIDGE_API_KEY"],
       "settings": {
