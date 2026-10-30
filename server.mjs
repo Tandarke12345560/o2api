@@ -37,6 +37,8 @@ const HELP = `
     -d, --workdir <dir>    Directory the agent works in (default: cwd)
     -u, --url <url>        OpenCode server URL          (default: http://127.0.0.1:49374)
         --password <pw>    OpenCode service password    (default: service.json)
+        --cors <origins>   Comma-separated allowed browser origins (default: none)
+        --allowed-host <h> Extra Host header values to accept (comma-separated)
     -v, --version          Print version
         --help             Print this help
 
@@ -44,6 +46,7 @@ const HELP = `
     o2api
     o2api --port 8080 --key sk-local
     o2api --host 0.0.0.0 --key sk-local --workdir ~/code/my-app
+    o2api --host 0.0.0.0 --key sk-local --cors https://app.example.com
 
   Then:
     curl http://127.0.0.1:8787/v1/chat/completions \\
@@ -115,6 +118,50 @@ const DEFAULT_AGENT = ARGS.agent || process.env.DEFAULT_AGENT || "build";
 const WORKDIR = ARGS.workdir || process.env.WORKDIR || process.cwd();
 const BRIDGE_API_KEY = ARGS.key || process.env.BRIDGE_API_KEY || null;
 const CLI_PASSWORD = ARGS.password || process.env.OPENCODE_PASSWORD || null;
+
+const splitList = (value) =>
+  String(value ?? "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+
+const CORS_ORIGINS = splitList(
+  ARGS.cors !== undefined ? (ARGS.cors === true ? "" : ARGS.cors) : process.env.CORS_ORIGINS,
+);
+
+const LOOPBACK = new Set(["127.0.0.1", "::1", "localhost"]);
+const isLoopback = LOOPBACK.has(HOST.toLowerCase());
+
+if (!isLoopback && !BRIDGE_API_KEY) {
+  console.error(`
+  \x1b[31merror:\x1b[0m refusing to bind ${HOST} without an API key.
+
+  Exposing the bridge beyond localhost lets anyone who can reach the port
+  drive your OpenCode agent (including file and shell tools).
+
+  Use one of:
+    o2api --host ${HOST} --key "$(openssl rand -hex 24)"
+    o2api --host ${HOST} --key sk-local --cors https://your.app
+  Or keep the default: --host 127.0.0.1
+`);
+  process.exit(1);
+}
+
+// Host header allowlist. Loopback is always accepted; the machine's own
+// interface addresses are added when the platform lets us enumerate them.
+// `os.networkInterfaces()` can throw in restricted containers/sandboxes, so
+// treat it as best-effort and never fail startup because of it.
+const allowedHosts = new Set(["127.0.0.1", "localhost", "::1"]);
+try {
+  for (const addrs of Object.values(os.networkInterfaces())) {
+    for (const addr of addrs ?? []) allowedHosts.add(addr.address.toLowerCase());
+  }
+} catch {}
+if (!["0.0.0.0", "::"].includes(HOST)) allowedHosts.add(HOST.toLowerCase());
+for (const h of splitList(ARGS["allowed-host"] ?? process.env.ALLOWED_HOSTS)) {
+  allowedHosts.add(h);
+}
+
 
 function readPassword() {
   if (CLI_PASSWORD) return CLI_PASSWORD;
@@ -319,7 +366,6 @@ function json(res, status, data) {
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "content-length": Buffer.byteLength(body),
-    "access-control-allow-origin": "*",
   });
   res.end(body);
 }
@@ -327,6 +373,46 @@ function json(res, status, data) {
 function sse(res, event, data) {
   if (event) res.write(`event: ${event}\n`);
   res.write(`data: ${typeof data === "string" ? data : JSON.stringify(data)}\n\n`);
+}
+
+/**
+ * Reject requests whose Host header is not one of ours (DNS rebinding) and
+ * browser requests from origins we were not told to trust (CSRF).
+ * Requests without Origin (curl, server-side SDKs) are allowed.
+ */
+function rejectUntrusted(req, res) {
+  const hostHeader = String(req.headers.host ?? "")
+    .replace(/:\d+$/, "")
+    .replace(/^\[|\]$/g, "")
+    .toLowerCase();
+  if (hostHeader && !allowedHosts.has(hostHeader)) {
+    json(res, 403, {
+      error: {
+        message: `host '${hostHeader}' not allowed`,
+        hint: "pass --allowed-host to accept this Host header",
+      },
+    });
+    return true;
+  }
+
+  const origin = req.headers.origin;
+  if (origin && !CORS_ORIGINS.includes(origin.toLowerCase())) {
+    json(res, 403, {
+      error: {
+        message: `origin '${origin}' not allowed`,
+        hint: "pass --cors <origin> to allow browser clients",
+      },
+    });
+    return true;
+  }
+
+  if (origin) {
+    res.setHeader("access-control-allow-origin", origin);
+    res.setHeader("access-control-allow-headers", "authorization,content-type,x-session-id");
+    res.setHeader("access-control-allow-methods", "GET,POST,OPTIONS");
+    res.setHeader("vary", "Origin");
+  }
+  return false;
 }
 
 function authorized(req) {
@@ -373,7 +459,6 @@ async function handleChat(req, res, body) {
         "content-type": "text/event-stream; charset=utf-8",
         "cache-control": "no-cache",
         connection: "keep-alive",
-        "access-control-allow-origin": "*",
       });
 
       const id = `chatcmpl_${Date.now()}`;
@@ -481,12 +566,10 @@ async function handleChat(req, res, body) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
 
+  if (rejectUntrusted(req, res)) return;
+
   if (req.method === "OPTIONS") {
-    res.writeHead(204, {
-      "access-control-allow-origin": "*",
-      "access-control-allow-headers": "*",
-      "access-control-allow-methods": "GET,POST,OPTIONS",
-    });
+    res.writeHead(204);
     return res.end();
   }
 
@@ -559,6 +642,7 @@ function banner() {
     `  ${c.green}➜${c.reset} Upstream  ${OPENCODE_URL}`,
     `  ${c.green}➜${c.reset} Workdir   ${WORKDIR}`,
     `  ${c.green}➜${c.reset} Auth      ${BRIDGE_API_KEY ? c.green + "bearer key required" : c.yellow + "open (localhost only)"}${c.reset}`,
+    `  ${c.green}➜${c.reset} CORS      ${CORS_ORIGINS.length ? CORS_ORIGINS.join(", ") : c.dim + "browser origins blocked" + c.reset}`,
     "",
     `  ${c.dim}Models:  curl http://${HOST}:${PORT}/v1/models${c.reset}`,
     `  ${c.dim}Chat:    curl http://${HOST}:${PORT}/v1/chat/completions${c.reset}`,
