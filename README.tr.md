@@ -48,7 +48,7 @@ npx o2api
 veya:
 
 ```bash
-git clone https://github.com/yourname/o2api.git
+git clone https://github.com/Tandarke12345560/o2api.git
 cd o2api && node server.mjs
 ```
 
@@ -111,6 +111,8 @@ o2api --port 8080 --key sk-local
 | `-d, --workdir` | `WORKDIR` | cwd | Ajanın çalışma dizini |
 | `-u, --url` | `OPENCODE_URL` | `http://127.0.0.1:49374` | OpenCode adresi |
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | Servis şifresi |
+| `--cors` | `CORS_ORIGINS` | — | API'yi çağırabilecek tarayıcı origin'leri (virgüllü) |
+| `--allowed-host` | `ALLOWED_HOSTS` | loopback + yerel IP'ler | Kabul edilecek ek `Host` başlıkları |
 
 ```bash
 o2api --help
@@ -133,7 +135,7 @@ Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş Op
 ## 🔐 Güvenlik
 
 - Varsayılan olarak **sadece localhost**.
-- `--host 0.0.0.0` kullanacaksan **mutlaka `--key`** ver.
+- `--host 0.0.0.0` kullanacaksan **mutlaka `--key`** ver; anahtar yoksa sunucu açılmayı reddeder.
 - İnternete açma; gerekiyorsa reverse proxy + TLS + rate limit.
 - Şifre `~/.config/opencode/service.json`'dan okunur, dışarı çıkmaz.
 

@@ -124,7 +124,7 @@ for i, (label, color) in enumerate([("zero deps", "#C4B5FD"), ("one command", "#
 
 d.text((250, 372), "curl http://127.0.0.1:8787/v1/chat/completions", font=sub, fill=CYAN)
 d.text((250, 414), '  -d \'{"model":"...","messages":[...]}\'', font=sub, fill=DIM)
-d.text((250, 482), "https://github.com/yourname/o2api", font=sub, fill=GRAY)
+d.text((250, 482), "https://github.com/Tandarke12345560/o2api", font=sub, fill=GRAY)
 
 img.save("/root/opencode-bridge/assets/social.png", optimize=True)
 print("wrote assets/social.png")

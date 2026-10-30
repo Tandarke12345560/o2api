@@ -10,7 +10,7 @@ One command. Zero dependencies. Your existing tools just work.</p>
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2_0-22D3EE.svg?style=for-the-badge)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-%E2%89%A522-34D399.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-7C3AED.svg?style=for-the-badge)](package.json)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/yourname/o2api/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-FF69B4.svg?style=for-the-badge)](https://github.com/Tandarke12345560/o2api/pulls)
 [![OpenAI compatible](https://img.shields.io/badge/OpenAI-compatible-F59E0B.svg?style=for-the-badge)](https://platform.openai.com/docs/api-reference)
 
 <br/>
@@ -91,7 +91,7 @@ npx o2api
 or from a clone:
 
 ```bash
-git clone https://github.com/yourname/o2api.git
+git clone https://github.com/Tandarke12345560/o2api.git
 cd o2api
 node server.mjs
 ```
@@ -256,10 +256,15 @@ Flags win over environment variables. Every setting has both.
 | `-d, --workdir` | `WORKDIR` | `cwd` | Directory the agent operates in |
 | `-u, --url` | `OPENCODE_URL` | `http://127.0.0.1:49374` | OpenCode server URL |
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | OpenCode service password |
+| `--cors` | `CORS_ORIGINS` | — | Comma-separated browser origins allowed to call the API |
+| `--allowed-host` | `ALLOWED_HOSTS` | loopback + local IPs | Extra `Host` header values to accept |
 
 ```bash
 o2api --help
 ```
+
+> Binding to anything other than loopback **requires** `--key`; the server refuses to start
+> without it.
 
 ---
 
@@ -307,6 +312,8 @@ sequenceDiagram
 - **Always set `--key` when binding beyond localhost.** Anyone on the network can otherwise drive
   your agent — including file and shell tools, depending on your permissions.
 - **Never expose it to the public internet** without a reverse proxy, TLS, and rate limiting.
+- **Host/Origin allowlists.** Requests with a foreign `Host` header are rejected (DNS rebinding),
+  and browser requests are only answered for origins passed via `--cors` (no wildcard CORS).
 - The bridge reads `~/.config/opencode/service.json`; the password never leaves your machine
   except to your own OpenCode server.
 
@@ -354,8 +361,16 @@ BYOK, Ollama, vLLM, OpenRouter, …).
 <details>
 <summary><strong>Can I run it in Docker?</strong></summary>
 
-Yes — see [`Dockerfile`](Dockerfile). On Linux use `--network host` so the container can reach
-the OpenCode server on `127.0.0.1`.
+Yes — see [`Dockerfile`](Dockerfile).
+
+```bash
+docker build -t o2api .
+docker run --rm --network host o2api          # Linux: container reaches 127.0.0.1:49374
+
+# LAN / other hosts (key is mandatory off-loopback):
+docker run --rm --network host \
+  -e HOST=0.0.0.0 -e BRIDGE_API_KEY="$(openssl rand -hex 24)" o2api
+```
 
 </details>
 
@@ -388,7 +403,7 @@ PRs welcome — keep the dependency count at zero. 🧡
 ## 🤝 Contributing
 
 ```bash
-git clone https://github.com/yourname/o2api.git
+git clone https://github.com/Tandarke12345560/o2api.git
 cd o2api
 node --check server.mjs   # syntax
 node server.mjs --help    # smoke
@@ -433,8 +448,8 @@ OpenCode itself is a separate project with its own license and terms of service.
 
 **If this saved you an afternoon, a ⭐ helps other people find it.**
 
-<a href="https://github.com/yourname/o2api/stargazers">⭐ Star</a> ·
-<a href="https://github.com/yourname/o2api/issues">🐛 Issues</a> ·
-<a href="https://github.com/yourname/o2api/discussions">💬 Discussions</a>
+<a href="https://github.com/Tandarke12345560/o2api/stargazers">⭐ Star</a> ·
+<a href="https://github.com/Tandarke12345560/o2api/issues">🐛 Issues</a> ·
+<a href="https://github.com/Tandarke12345560/o2api/discussions">💬 Discussions</a>
 
 </div>

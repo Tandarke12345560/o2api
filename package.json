@@ -37,12 +37,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourname/o2api.git"
+    "url": "git+https://github.com/Tandarke12345560/o2api.git"
   },
   "bugs": {
-    "url": "https://github.com/yourname/o2api/issues"
+    "url": "https://github.com/Tandarke12345560/o2api/issues"
   },
-  "homepage": "https://github.com/yourname/o2api#readme",
+  "homepage": "https://github.com/Tandarke12345560/o2api#readme",
   "author": "",
   "license": "Apache-2.0"
 }
