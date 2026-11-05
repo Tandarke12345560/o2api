@@ -12,9 +12,15 @@
         "baseURL": "http://127.0.0.1:8787/v1"
       },
       "models": {
-        // Use any model id returned by http://127.0.0.1:8787/v1/models
+        // Use any model id returned by http://127.0.0.1:8787/v1/models.
+        // Copy the real limits from that response; without them OpenCode
+        // assumes 200k context / 32k output and may exceed the real model.
         "flint-40b-free": {
-          "name": "Flint 40B (via bridge)"
+          "name": "Flint 40B (via bridge)",
+          "limit": {
+            "context": 262144,
+            "output": 65536
+          }
         }
       }
     }

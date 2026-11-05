@@ -113,6 +113,10 @@ o2api --port 8080 --key sk-local
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | Servis şifresi |
 | `--cors` | `CORS_ORIGINS` | — | API'yi çağırabilecek tarayıcı origin'leri (virgüllü) |
 | `--allowed-host` | `ALLOWED_HOSTS` | loopback + yerel IP'ler | Kabul edilecek ek `Host` başlıkları |
+| `--max-prompt-tokens` | `MAX_PROMPT_TOKENS` | `0` (model bağlamı) | Gönderilen prompt için üst token sınırı |
+| `--context-overhead` | `CONTEXT_OVERHEAD_TOKENS` | `8192` | OpenCode sistem prompt'u/araçları için ayrılan token |
+| `--timeout` | `REQUEST_TIMEOUT` | `600` | İstek zaman aşımı (saniye) |
+| `--session-ttl` | `SESSION_TTL` | `3600` | `x-session-id` oturumlarının boşta kalma ömrü (saniye) |
 
 ```bash
 o2api --help
@@ -129,6 +133,41 @@ curl ... -H 'x-session-id: sohbet-1' ...
 ```
 
 Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş OpenCode'ta kalır.
+Boşta kalan oturumlar varsayılan olarak 1 saat sonra silinir (`--session-ttl`). Aynı oturumda
+`model` veya `agent` değiştirirsen köprü OpenCode oturumunu yerinde günceller.
+
+---
+
+## 🧮 Token limitleri
+
+Köprü, her modelin gerçek `limit.context` / `limit.output` değerlerini OpenCode'dan okur ve
+`GET /v1/models` üzerinden yayınlar:
+
+```json
+{
+  "id": "flint-40b-free",
+  "context": 262144,
+  "max_output_tokens": 65536,
+  "limit": { "context": 262144, "output": 65536 }
+}
+```
+
+İstekler şöyle sınır içinde tutulur:
+
+- **`max_tokens` / `max_completion_tokens` uygulanır.** Normal yanıtlar kesilir ve
+  `finish_reason: "length"` döner; stream ise sınıra gelince OpenCode turunu durdurur, böylece
+  kalan üretim için kota harcanmaz.
+- **Uzun prompt'lar reddedilmez, kırpılır.** Önce eski mesajlar atılır, en yeni kullanıcı mesajı
+  korunur ve kaç mesajın atıldığını söyleyen küçük bir `[o2api]` sistem notu eklenir.
+- **OpenCode'un kendi prompt'u için pay ayrılır.** `--context-overhead` (varsayılan `8192`
+  token) ajan sistem prompt'u ve araç tanımları için ayrılır. `--max-prompt-tokens` ile modelden
+  bağımsız sert bir sınır koyabilirsin.
+- **Upstream hataları görünür olur.** OpenCode'tan gelen model/bağlam hatası boş bir `200` yerine
+  OpenAI biçiminde `{ "error": { ... } }` olarak döner.
+
+Köprüyü başka bir OpenCode örneğinde sağlayıcı olarak kullanacaksan, o sağlayıcının model
+ayarına gerçek `limit.context` ve `limit.output` değerlerini kopyala. Aksi hâlde OpenCode
+200k/32k varsayılanını kullanır ve alttaki modelin kabul edemeyeceği istekler gönderebilir.
 
 ---
 
@@ -144,9 +183,13 @@ Aynı anahtarla gelen sonraki istekte sadece yeni mesaj gönderilir; geçmiş Op
 ## ⚠️ Sınırlar
 
 - **Ajan API'si, saf chat değil** — araç çağrıları istemciye aktarılmaz.
-- **~5k token taban** — her istek OpenCode sistem prompt'unu taşır.
+- **~5k token taban** — her istek OpenCode sistem prompt'unu taşır. Geçmiş kırpılırken 8k token
+  ayrılır; ajanların büyük talimatları varsa `--context-overhead` değerini artır.
+- **`max_tokens` köprü tarafında uygulanır.** OpenCode prompt API'sinde istek başına çıktı sınırı
+  yoktur; köprü metni keser ve turu durdurur. Sağlayıcı, durdurmadan önce üretilen token'ları
+  (özellikle reasoning) yine de faturalandırabilir.
 - **Streaming 300 ms** dilimlerle (polling).
-- **İzinler** OpenCode yapılandırmasına tabi; `ask` kuralı isteği bekletir.
+- **İzinler** OpenCode yapılandırmasına tabi; `ask` kuralı isteği bekletir (veya `--timeout` devreye girer).
 - **Sağlayıcı limitleri** aynen geçerli.
 
 ---

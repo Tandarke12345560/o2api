@@ -68,10 +68,11 @@ without writing glue code.
 | 🧠 | **All your models** | Whatever OpenCode exposes — free, Go, BYOK, Ollama, vLLM |
 | 🔁 | **Multi-turn sessions** | Reuse an OpenCode session with `x-session-id` |
 | 🌊 | **Streaming** | Real deltas, not a single blob |
+| 🧮 | **Token aware** | Honors `max_tokens`, trims history to the model context window, reports `limit` |
 | 🔐 | **Optional auth** | Bearer token for LAN / shared machines |
 | 🌍 | **LAN ready** | `--host 0.0.0.0` when you need it |
 | 🩺 | **Health check** | `/health` reports upstream version |
-| 🧩 | **Tiny surface** | One file, ~600 lines, easy to audit and fork |
+| 🧩 | **Tiny surface** | One file, no dependencies, easy to audit and fork |
 
 ---
 
@@ -223,6 +224,40 @@ curl -s http://127.0.0.1:8787/v1/chat/completions \
 ```
 
 Next call with the same `x-session-id` sends only the newest message; OpenCode keeps the history.
+Idle sessions expire after one hour by default (`--session-ttl`). Changing the `model` or `agent`
+on a reused session switches the OpenCode session in place.
+
+### Token limits
+
+The bridge reads each model's real `limit.context` / `limit.output` from OpenCode and exposes it
+in `GET /v1/models`:
+
+```json
+{
+  "id": "flint-40b-free",
+  "context": 262144,
+  "max_output_tokens": 65536,
+  "limit": { "context": 262144, "output": 65536 }
+}
+```
+
+How requests are kept inside the limit:
+
+- **`max_tokens` / `max_completion_tokens` are enforced.** Non-stream responses are truncated and
+  `finish_reason` becomes `"length"`; streams stop at the cap and interrupt the OpenCode turn so
+  you do not pay for the rest of the generation.
+- **Long prompts are trimmed, not rejected.** Older conversation messages are dropped first, the
+  newest user message is kept, and a small `[o2api]` system note says how many were omitted.
+- **OpenCode's own prompt is reserved.** `--context-overhead` (default `8192` tokens) covers the
+  agent system prompt and tool definitions. Set `--max-prompt-tokens` to hard-cap the forwarded
+  prompt regardless of the model.
+- **Upstream errors are surfaced.** A model/context error from OpenCode is returned as an
+  OpenAI-style `{ "error": { ... } }` response instead of an empty `200`.
+
+When you use the bridge as a provider inside another OpenCode instance, copy the real
+`limit.context` and `limit.output` values into that provider's model config. Otherwise OpenCode
+falls back to its 200k/32k default and may send requests the underlying model cannot accept.
+
 
 ### List models
 
@@ -258,6 +293,10 @@ Flags win over environment variables. Every setting has both.
 | `--password` | `OPENCODE_PASSWORD` | `service.json` | OpenCode service password |
 | `--cors` | `CORS_ORIGINS` | — | Comma-separated browser origins allowed to call the API |
 | `--allowed-host` | `ALLOWED_HOSTS` | loopback + local IPs | Extra `Host` header values to accept |
+| `--max-prompt-tokens` | `MAX_PROMPT_TOKENS` | `0` (model context) | Hard cap for forwarded prompt tokens |
+| `--context-overhead` | `CONTEXT_OVERHEAD_TOKENS` | `8192` | Tokens reserved for OpenCode's system prompt/tools |
+| `--timeout` | `REQUEST_TIMEOUT` | `600` | Per-request timeout in seconds |
+| `--session-ttl` | `SESSION_TTL` | `3600` | Idle lifetime of `x-session-id` sessions |
 
 ```bash
 o2api --help
@@ -296,10 +335,11 @@ sequenceDiagram
 
 1. Parse OpenAI body → resolve `model` via `/api/model`.
 2. Create (or reuse) an OpenCode session.
-3. Flatten `messages[]` into a single prompt (`System: … / User: … / Assistant: …`).
-4. `POST /prompt`, then `POST /wait` until the agent loop is idle.
-5. Read messages, keep only `type: "text"` parts of the last assistant message.
-6. Map tokens → `usage`, return `chat.completion`.
+3. Flatten `messages[]` into a single prompt (`System: … / User: … / Assistant: …`),
+   trimming the oldest turns to fit `limit.context − limit.output − overhead`.
+4. `POST /prompt`, then `POST /wait` until the agent loop is idle (or `max_tokens` is reached).
+5. Read messages, keep only `type: "text"` parts of the assistant messages in this turn.
+6. Map tokens → `usage`, finish reason, return `chat.completion`.
 7. Delete the session if it was stateless.
 
 </details>
@@ -323,11 +363,15 @@ sequenceDiagram
 
 - **Agent API, not pure chat.** OpenCode can run tools; the bridge returns only the final text.
   Tool calls are not forwarded to the client as structured calls.
-- **~5k token floor.** Every request carries OpenCode's system prompt. For cheap classification
-  or short chats, a direct model API is faster and cheaper.
+- **~5k token floor.** Every request carries OpenCode's system prompt. The bridge reserves 8k
+  tokens for it when trimming history; raise `--context-overhead` if your agents add large
+  instructions or tool descriptions.
+- **`max_tokens` is enforced on the bridge side.** OpenCode's prompt API has no per-request output
+  limit, so the bridge truncates and interrupts. The provider may still bill for tokens generated
+  before the interrupt, especially reasoning tokens.
 - **Streaming granularity is 300 ms** (message polling), not token-level.
 - **Permissions** follow your OpenCode config. For unattended use, define `permissions`
-  explicitly — an `ask` rule will block a request until answered.
+  explicitly — an `ask` rule will block a request until answered (or `--timeout` fires).
 - **Provider limits still apply.** Free tiers, Go limits, and rate limits are unchanged.
 
 ---
