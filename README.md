@@ -100,7 +100,7 @@ node server.mjs
 You'll see:
 
 ```text
-  o2api v1.0.0
+  o2api v1.1.1
   OpenCode → OpenAI-compatible API
 
   ➜ Local     http://127.0.0.1:8787/v1

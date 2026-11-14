@@ -18,8 +18,9 @@ import http from "node:http";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import crypto from "node:crypto";
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const PID_FILE = path.join(os.tmpdir(), "o2api.pid");
 
 const HELP = `
@@ -919,7 +920,15 @@ function rejectUntrusted(req, res) {
 function authorized(req) {
   if (!BRIDGE_API_KEY) return true;
   const header = req.headers.authorization ?? "";
-  return header === `Bearer ${BRIDGE_API_KEY}`;
+  const expected = Buffer.from(`Bearer ${BRIDGE_API_KEY}`);
+  const given = Buffer.from(header);
+  if (given.length !== expected.length) {
+    // Burn a comparison anyway so wrong-length keys are not distinguishable
+    // from wrong-value keys by response timing.
+    crypto.timingSafeEqual(expected, expected);
+    return false;
+  }
+  return crypto.timingSafeEqual(expected, given);
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
